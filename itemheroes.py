@@ -32,12 +32,20 @@ df = df.dropna(axis='columns', how='all')
 # then make all the NaNs into zero
 df = df.fillna(0)
 
+
+# Fill in column names
+heromap = {h['id']: h['name'] for h in heroes}
+itemmap = {i['id']: i['name'] for i in items}
+df = df.rename(columns=heromap, index=itemmap)
+
 print df
 
-f, ax = plt.subplots(figsize=(11,9))
+f, ax = plt.subplots(figsize=(11, 9))
 cmap = sns.diverging_palette(220, 10, as_cmap=True)
-sns.heatmap(df, cmap=cmap, vmax=.3,
-            square=True, xticklabels=5, yticklabels=5,
+g = sns.heatmap(df, cmap=cmap,
+            square=True, xticklabels=True, yticklabels=True,
             linewidths=.5, cbar_kws={"shrink": .5}, ax=ax)
 
+plt.xticks(rotation=90)
+plt.yticks(rotation=0)
 plt.show()
