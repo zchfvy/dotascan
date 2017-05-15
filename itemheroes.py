@@ -55,11 +55,12 @@ def preprocess_for_display(df):
     for r in itemmap.values():
         if 'recipe' in r:
             bad_items.append(r)
-        elif 'river_painter' in r:
+        if 'river' in r:
             bad_items.append(r)
     df = df.drop(bad_items)
 
     df = df.transpose()  # Looks nicer this way
+    df = df.pow(1.0/4.0)
 
     return df
 
@@ -69,7 +70,7 @@ def show(df):
 
     sns.set(style="white")
 
-    f, ax = plt.subplots(figsize=(11, 9))
+    f, ax = plt.subplots(figsize=(20, 15))
     cmap = sns.diverging_palette(220, 10, as_cmap=True)
     sns.heatmap(
                 df, cmap=cmap,
@@ -78,6 +79,8 @@ def show(df):
 
     plt.xticks(rotation=90, fontsize=8)
     plt.yticks(rotation=0, fontsize=8)
+
+    plt.savefig('out.png')
     plt.show()
 
 
