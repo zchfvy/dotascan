@@ -38,13 +38,11 @@ heromap = {h['id']: h['name'] for h in heroes}
 itemmap = {i['id']: i['name'] for i in items}
 df = df.rename(columns=heromap, index=itemmap)
 
-print df
-
 f, ax = plt.subplots(figsize=(11, 9))
 cmap = sns.diverging_palette(220, 10, as_cmap=True)
 g = sns.heatmap(df, cmap=cmap,
             square=True, xticklabels=True, yticklabels=True,
-            linewidths=.5, cbar_kws={"shrink": .5}, ax=ax)
+            linewidths=.0, cbar_kws={"shrink": .5}, ax=ax)
 
 plt.xticks(rotation=90)
 plt.yticks(rotation=0)
