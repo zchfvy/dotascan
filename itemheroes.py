@@ -12,28 +12,38 @@ def build_data():
 
     item_ids = [i['id'] for i in items]
     hero_ids = [h['id'] for h in heroes]
-    df = pd.DataFrame(0, index=item_ids, columns=hero_ids)
+    buy = pd.DataFrame(0, index=item_ids, columns=hero_ids)
+    win = pd.DataFrame(0, index=item_ids, columns=hero_ids)
+    loss = pd.DataFrame(0, index=item_ids, columns=hero_ids)
     i_ser = pd.Series(0, index=item_ids)
     h_ser = pd.Series(0, index=hero_ids)
     for match in tqdm(matches, desc="Processing Matches"):
-        for pl in match['players']:
+        for i, pl in enumerate(match['players']):
             hero = pl['hero_id']
+            hero_is_radiant = i < 5
             h_ser[hero] += 1
             for slot in slots:
                 item = pl[slot]
                 if item != 0:
-                    old_val = df.get_value(item, hero)
-                    new_val = old_val + 1
-                    df.set_value(item, hero, new_val)
+                    # old_val = buy.get_value(item, hero)
+                    # new_val = old_val + 1
+                    # buy.set_value(item, hero, new_val)
+                    buy.ix[item, hero] += 1
                     i_ser[item] += 1
+                    if match['radiant_win'] != hero_is_radiant:  # logical xor
+                        loss.ix[item, hero] += 1
+                    else:
+                        win.ix[item, hero] += 1
 
     # Next we process the data into percentages instead of raw values
     print("Calculating percentages")
-    df_i = df.divide(i_ser, axis='index')
-    df_h = df.divide(h_ser, axis='columns')
-    df = df_i.multiply(df_h)
+    buy_i = buy.divide(i_ser, axis='index')
+    buy_h = buy.divide(h_ser, axis='columns')
+    buy = buy_i.multiply(buy_h)
 
-    return df
+    winloss = win.divide(win.add(loss))
+
+    return buy, winloss
 
 
 def preprocess_for_display(df):
@@ -60,7 +70,6 @@ def preprocess_for_display(df):
     df = df.drop(bad_items)
 
     df = df.transpose()  # Looks nicer this way
-    df = df.pow(1.0/4.0)
 
     return df
 
@@ -85,9 +94,12 @@ def show(df):
 
 
 def main():
-    df = build_data()
+    df, win = build_data()
     df = preprocess_for_display(df)
+    win = preprocess_for_display(win)
+    df = df.pow(1.0/4.0)  # exagerate the values in the buy rate cahrt
     show(df)
+    show(win)
 
 
 if __name__ == '__main__':
