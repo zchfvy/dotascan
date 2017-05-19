@@ -13,7 +13,15 @@ for fn in tqdm(fnames, desc="Loading Files"):
         continue
     fn = os.path.join(sys.argv[1], fn)
     with open(fn) as f:
-        matches.append(json.load(f)['result'])
+        try:
+            json_obj = json.load(f)
+        except ValueError:
+            print("Failed to load {}.".format(fn))
+            continue
+        if 'result' not in json_obj:
+            print("Skipping {} due to bad data.".format(fn))
+            continue
+        matches.append(json_obj['result'])
 
 items = {}
 with open(os.path.join(local_dir, 'items.json')) as f:
