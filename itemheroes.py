@@ -74,32 +74,33 @@ def preprocess_for_display(df):
     return df
 
 
-def show(df):
+def show(df, filename='out.png'):
     print("Building Graphic")
 
     sns.set(style="white")
 
     f, ax = plt.subplots(figsize=(20, 15))
-    cmap = sns.diverging_palette(220, 10, as_cmap=True)
     sns.heatmap(
-                df, cmap=cmap,
+                df,
                 square=True, xticklabels=True, yticklabels=True,
                 linewidths=.03, cbar_kws={"shrink": .5}, ax=ax)
 
     plt.xticks(rotation=90, fontsize=8)
     plt.yticks(rotation=0, fontsize=8)
 
-    plt.savefig('out.png')
+    plt.savefig(filename)
     plt.show()
 
 
 def main():
-    df, win = build_data()
-    df = preprocess_for_display(df)
+    pick, win = build_data()
+    pick = preprocess_for_display(pick)
     win = preprocess_for_display(win)
-    df = df.pow(1.0/4.0)  # exagerate the values in the buy rate cahrt
-    show(df)
-    show(win)
+    pick = pick.pow(1.0/4.0)  # exagerate the values in the buy rate cahrt
+    win = win*2.0 - 1.0  # Change from 0,1 winrate to -1,+1 winloss rate
+    show(pick, 'pick.png')
+    show(win, 'win.png')
+    show(pick*win, 'pickwin.png')
 
 
 if __name__ == '__main__':
