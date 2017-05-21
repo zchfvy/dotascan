@@ -74,14 +74,16 @@ def preprocess_for_display(df):
     return df
 
 
-def show(df, filename='out.png'):
+def show(df, filename='out.png', pallete=None):
     print("Building Graphic")
 
     sns.set(style="white")
 
     f, ax = plt.subplots(figsize=(20, 15))
+    if pallete is None:
+        pallete = sns.light_palette("navy", as_cmap=True)
     sns.heatmap(
-                df,
+                df, cmap=pallete,
                 square=True, xticklabels=True, yticklabels=True,
                 linewidths=.03, cbar_kws={"shrink": .5}, ax=ax)
 
@@ -98,9 +100,11 @@ def main():
     win = preprocess_for_display(win)
     pick = pick.pow(1.0/4.0)  # exagerate the values in the buy rate cahrt
     win = win*2.0 - 1.0  # Change from 0,1 winrate to -1,+1 winloss rate
+
+    coolwarm = sns.diverging_palette(20, 220, as_cmap=True)
     show(pick, 'pick.png')
-    show(win, 'win.png')
-    show(pick*win, 'pickwin.png')
+    show(win, 'win.png', pallete=coolwarm)
+    show(pick*win, 'pickwin.png', pallete=coolwarm)
 
 
 if __name__ == '__main__':
