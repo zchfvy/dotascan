@@ -6,6 +6,26 @@ from tqdm import tqdm
 from data import matches, items, heroes
 
 
+def get_data(fresh=False):
+    if not fresh:
+        try:
+            buy = pd.read_pickle('buy.pickle')
+            win = pd.read_pickle('win.pickle')
+            loss = pd.read_pickle('loss.pickle')
+            return buy, win, loss
+        except:
+            print("Error reading pickled data")
+            print("Loading data fresh")
+
+    buy, win, loss = build_data()
+
+    buy.to_pickle('buy.pickle')
+    win.to_pickle('win.pickle')
+    loss.to_pickle('loss.pickle')
+
+    return buy, win, loss
+
+
 def build_data():
     slots = ['item_0', 'item_1', 'item_2', 'item_3', 'item_4', 'item_5',
              'backpack_0', 'backpack_1', 'backpack_2']
@@ -97,7 +117,7 @@ def show(df, filename='out.png', pallete=None):
 
 
 def main():
-    pick, win, loss = build_data()
+    pick, win, loss = get_data()
     total = win.add(loss)
 
     # winloss = win.divide(win.add(loss)) # naieve
