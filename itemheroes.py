@@ -3,7 +3,7 @@ import pandas as pd
 import seaborn as sns
 from tqdm import tqdm
 
-from data import matches, items, heroes
+from data import get_matches, get_items, get_heroes
 
 
 def get_data(fresh=False):
@@ -29,6 +29,10 @@ def get_data(fresh=False):
 def build_data():
     slots = ['item_0', 'item_1', 'item_2', 'item_3', 'item_4', 'item_5',
              'backpack_0', 'backpack_1', 'backpack_2']
+
+    items = get_items()
+    heroes = get_heroes()
+    matches = get_matches()
 
     item_ids = [i['id'] for i in items]
     hero_ids = [h['id'] for h in heroes]
@@ -66,6 +70,9 @@ def build_data():
 
 def preprocess_for_display(df):
     print("Preprocessing data for display")
+
+    items = get_items()
+    heroes = get_heroes()
 
     # sort items by cost
     sorted_items = [i['id'] for i in sorted(items, key=lambda i: i['cost'])]
