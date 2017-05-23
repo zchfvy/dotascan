@@ -41,9 +41,7 @@ def build_data():
     buy_h = buy.divide(h_ser, axis='columns')
     buy = buy_i.multiply(buy_h)
 
-    winloss = win.divide(win.add(loss))
-
-    return buy, winloss
+    return buy, win, loss
 
 
 def preprocess_for_display(df):
@@ -95,16 +93,21 @@ def show(df, filename='out.png', pallete=None):
 
 
 def main():
-    pick, win = build_data()
+    pick, win, loss = build_data()
+    total = win.add(loss)
+
+    # winloss = win.divide(win.add(loss)) # naieve
+    winloss = win.add(1).divide(total.add(2))  # laplace
+
     pick = preprocess_for_display(pick)
-    win = preprocess_for_display(win)
+    winloss = preprocess_for_display(winloss)
     pick = pick.pow(1.0/4.0)  # exagerate the values in the buy rate cahrt
-    win = win*2.0 - 1.0  # Change from 0,1 winrate to -1,+1 winloss rate
+    winloss = winloss*2.0 - 1.0  # Change from 0,1 winrate to -1,+1
 
     coolwarm = sns.diverging_palette(20, 220, as_cmap=True)
     show(pick, 'pick.png')
-    show(win, 'win.png', pallete=coolwarm)
-    show(pick*win, 'pickwin.png', pallete=coolwarm)
+    show(winloss, 'win.png', pallete=coolwarm)
+    show(pick*winloss, 'pickwin.png', pallete=coolwarm)
 
 
 if __name__ == '__main__':
