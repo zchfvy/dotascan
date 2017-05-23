@@ -47,6 +47,10 @@ def build_data():
 def preprocess_for_display(df):
     print("Preprocessing data for display")
 
+    # sort items by cost
+    sorted_items = [i['id'] for i in sorted(items, key=lambda i: i['cost'])]
+    df = df.reindex(sorted_items)
+
     def process_hero(name):
         return name.replace('npc_dota_hero', '').replace('_', ' ')
 
